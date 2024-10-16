@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dto.BookDTO;
+import dto.MemberDTO;
 
-public class BookDAO {
+public class MemberDAO {
 
 	private Connection con;
 	private PreparedStatement pstmt;
@@ -54,6 +54,7 @@ public class BookDAO {
 		}
 		
 	}
+
 	
 	// CRUD 메소드
 	
@@ -63,30 +64,31 @@ public class BookDAO {
 	// List<~~~DTO> : where 절 없는 경우, where 절이 pk 가 아니면
 	// ~~~DTO : where 절이 pk 인 경우
 	
+	
 	// 전달인자 : () 에 어떻게 작성할 것인가?
 	// 			  sql 구문의 ? 보고 결정
-	public BookDTO getRow(int code) {
+	public MemberDTO isLogin(MemberDTO loginDto) {
 		
-		BookDTO dto = null;
+		MemberDTO dto = null;
 		
 		try {
 			
 			con = getConnection();
-			String sql = "SELECT * FROM BOOKTBL WHERE CODE = ?";
+			String sql = "SELECT * FROM membertbl WHERE userid=? and password=?";
 			pstmt = con.prepareStatement(sql);
-			// spl 구문 ? 해결
-			pstmt.setInt(1, code);
-			rs = pstmt.executeQuery();
-			// where pk 사용된 경우 하나만 추출됨
-			if (rs.next()) {
-				dto = new BookDTO();
-				dto.setCode(rs.getInt("code"));
-				dto.setTitle(rs.getString("title"));
-				dto.setWriter(rs.getString("writer"));
-				dto.setPrice(rs.getInt("price"));
-				dto.setDescription(rs.getString("description"));
-			}
 			
+			pstmt.setString(1, loginDto.getUserid());
+			pstmt.setString(2, loginDto.getPassword());
+			
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				dto = new MemberDTO();
+				dto.setUserid(rs.getString("userid"));
+				dto.setPassword(rs.getString("password"));
+				dto.setName(rs.getString("name"));
+			}
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -95,104 +97,53 @@ public class BookDAO {
 		return dto;
 	}
 	
-	
-	
-	public List<BookDTO> getList(){
-		// 전체조회
-		List<BookDTO> list = new ArrayList<BookDTO>();
+public boolean dupId(String userid) {
+		
+		MemberDTO dto = null;
 		
 		try {
 			
 			con = getConnection();
-			String sql = "SELECT * FROM BOOKTBL order by code desc";
+			String sql = "SELECT * FROM membertbl WHERE userid=?";
 			pstmt = con.prepareStatement(sql);
-			// sql 구문 ? 해결
-			rs = pstmt.executeQuery();
 			
-			while(rs.next()) {
-				// dto 에 컬럼 별로 담고 list 에 추가
-				BookDTO dto = new BookDTO();
-				dto.setCode(rs.getInt("code"));
-				dto.setTitle(rs.getString("title"));
-				dto.setWriter(rs.getString("writer"));
-				dto.setPrice(rs.getInt("price"));
-				
-				list.add(dto);
+			pstmt.setString(1, userid);
+		
+			
+			rs = pstmt.executeQuery();
+			if (rs.next()) { // 중복 아이디 있음
+				return false;
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			close(con, pstmt, rs);
 		}
-		return list;
+		return true; // 중복 아이디 없음
 	}
-	
 	// U(Update) - 수정
 	// 수정 메소드 작성하기
 	// 리턴타입 : int
-	public int update(BookDTO updateDto) {
-		
-		int updateRow = 0;
-		
-		try {
-			
-			con = getConnection();
-			String sql = "UPDATE BOOKTBL SET price = ?, DESCRIPTION = ? WHERE CODE = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, updateDto.getPrice());
-			pstmt.setString(2, updateDto.getDescription());
-			pstmt.setInt(3, updateDto.getCode());
-			
-			updateRow = pstmt.executeUpdate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			close(con, pstmt);
-		}
-		return updateRow;
-	}
+	
 	
 	// D(Delete) - 삭제
 	// 삭제 메소드 작성하기
 	// 리턴타입 : int
-	public int delete(int code) {
-		
-		int deleteRow = 0;
-		
-		try {
-			
-			con = getConnection();
-			String sql = "DELETE FROM BOOKTBL WHERE code = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, code);
-			deleteRow = pstmt.executeUpdate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			close(con, pstmt);
-		}
-		return deleteRow;
-	}
+	
 	
 	// C(Create) - 삽입
 	// 삽입 메소드 작성하기
 	// 리턴타입 : int
-	public int insert(BookDTO insertDto) {
-		
+	public int insert(MemberDTO insertDto) {
 		int insertRow = 0;
-		
 		try {
-			
 			con = getConnection();
-			String sql="INSERT INTO booktbl(code, title, writer, price, description) values(?,?,?,?,?)";
+			String sql = "INSERT INTO membertbl(userid,name,password) VALUES(?,?,?)";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, insertDto.getCode());
-			pstmt.setString(2, insertDto.getTitle());
-			pstmt.setString(3, insertDto.getWriter());
-			pstmt.setInt(4, insertDto.getPrice());
-			pstmt.setString(5, insertDto.getDescription());
+			pstmt.setString(1, insertDto.getUserid());
+			pstmt.setString(2, insertDto.getName());
+			pstmt.setString(3, insertDto.getPassword());
 			
 			insertRow = pstmt.executeUpdate();
 			
@@ -204,7 +155,6 @@ public class BookDAO {
 		return insertRow;
 	}
 }
-
 
 
 

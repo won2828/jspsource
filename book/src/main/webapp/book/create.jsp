@@ -3,7 +3,7 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../include/header.jsp"%>
 <h3>Create</h3>
-<form>
+<form method="post" action="create_pro.jsp">
   <div class="row mb-3">
     <label for="code" class="col-sm-2 col-form-label">Code</label>
     <div class="col-sm-10">
