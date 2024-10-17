@@ -170,7 +170,7 @@ public class MemberDAO {
 		return loginDto;
 	}
 
-	public int update(ChangeDTO changeDTO) {
+	public int update(ChangeDTO changeDto) {
 		
 		int updateRow = 0;
 		
@@ -179,9 +179,9 @@ public class MemberDAO {
 			con = getConnection();
 			String sql = "UPDATE USERTBL SET PASSWORD = ? WHERE USERID = ? AND PASSWORD = ?";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, changeDTO.getChangePassword());
-			pstmt.setString(2, changeDTO.getUserid());
-			pstmt.setString(3, changeDTO.getCurrentPassword());
+			pstmt.setString(1, changeDto.getChangePassword());
+			pstmt.setString(2, changeDto.getUserid());
+			pstmt.setString(3, changeDto.getCurrentPassword());
 			
 			updateRow = pstmt.executeUpdate();
 			
