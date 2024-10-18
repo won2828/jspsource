@@ -4,14 +4,18 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dto.BookDTO;
+import dto.MemberDTO;
 import lombok.AllArgsConstructor;
 import service.BookService;
 import service.BookServiceImpl;
+import service.MemberService;
+import service.MemberServiceImpl;
 
 @AllArgsConstructor
-public class BookReadAction implements Action {
+public class MemberDupAction implements Action {
 
 	private String path;
 
@@ -19,16 +23,19 @@ public class BookReadAction implements Action {
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// 1.
-		int code =  Integer.parseInt(request.getParameter("code"));
-		String keyword  = request.getParameter("keyword");
+		String userid = request.getParameter("userid");
+		
 		
 		// 2. service 호출
-		BookService service = new BookServiceImpl();		
-		BookDTO dto = service.read(code);
+		MemberService service = new MemberServiceImpl();		
+		boolean dupFlag = service.duplicateId(userid);
 		
-		request.setAttribute("dto", dto);
-		request.setAttribute("keyword", keyword);
-		
+		if(dupFlag){
+			request.setAttribute("dup", "true");
+		} else {
+			request.setAttribute("dup", "false");
+		}
+
 		return new ActionForward(path, false);
 	}
 

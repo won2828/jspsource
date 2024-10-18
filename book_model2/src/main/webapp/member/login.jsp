@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../include/header.jsp"%>
 <h3>Login</h3>
-<form method="post" action="login_pro.jsp">
+<form method="post" action="/login.do">
   <div class="row mb-3">
     <label for="userid" class="col-sm-2 col-form-label">아이디</label>
     <div class="col-sm-10">

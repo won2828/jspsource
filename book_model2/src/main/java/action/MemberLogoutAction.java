@@ -4,32 +4,31 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dto.BookDTO;
+import dto.MemberDTO;
 import lombok.AllArgsConstructor;
 import service.BookService;
 import service.BookServiceImpl;
+import service.MemberService;
+import service.MemberServiceImpl;
 
 @AllArgsConstructor
-public class BookReadAction implements Action {
+public class MemberLogoutAction implements Action {
 
 	private String path;
 
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// 1.
-		int code =  Integer.parseInt(request.getParameter("code"));
-		String keyword  = request.getParameter("keyword");
 		
-		// 2. service 호출
-		BookService service = new BookServiceImpl();		
-		BookDTO dto = service.read(code);
+	
+			HttpSession session = request.getSession();
+			session.removeAttribute("loginDto");
 		
-		request.setAttribute("dto", dto);
-		request.setAttribute("keyword", keyword);
 		
-		return new ActionForward(path, false);
+		return new ActionForward(path, true);
 	}
 
 }

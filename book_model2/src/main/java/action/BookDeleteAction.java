@@ -1,5 +1,6 @@
 package action;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,7 @@ import service.BookService;
 import service.BookServiceImpl;
 
 @AllArgsConstructor
-public class BookReadAction implements Action {
+public class BookDeleteAction implements Action {
 
 	private String path;
 
@@ -24,13 +25,16 @@ public class BookReadAction implements Action {
 		
 		// 2. service 호출
 		BookService service = new BookServiceImpl();		
-		BookDTO dto = service.read(code);
+		boolean deleteFlag = service.delete(code);
 		
-		request.setAttribute("dto", dto);
-		request.setAttribute("keyword", keyword);
+		if(!deleteFlag) {
+			path = "/modify.do?code="+code;
+		}else {
+			// java.net.URLEncoder
+			path += "?keyword="+URLEncoder.encode(keyword, "utf-8");
+		}
 		
-		return new ActionForward(path, false);
+		return new ActionForward(path, true);
 	}
 
 }
-
